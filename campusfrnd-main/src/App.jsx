@@ -1,0 +1,39 @@
+import React from 'react'
+import { Route, Routes } from 'react-router-dom'
+import Home from './components/Pages/Home'
+import './App.css'
+import Login from './components/User/Login'
+import Signup from './components/User/Signup'
+import Profile from './components/Pages/Profile'
+import PostCard from './components/posts/PostCard'
+import AddPost from './components/posts/AddPost'
+import PostFeed from './components/posts/PostFeed'
+import ConnectUser from './components/User/ConnectUser'
+import NavBar from './components/NavBar'
+import Requests from './components/User/Requests'
+import ViewConnections from './components/User/ViewConnections'
+import ChatBox from './components/Chat/ChatBox'
+
+const App = () => {
+  const storedUser = JSON.parse(localStorage.getItem("user"));
+  return (
+    <div>
+      {storedUser && <NavBar />}
+      <Routes>
+        <Route path='/' element={<Home/>}/>
+        <Route path='/login' element={<Login/>}/>
+        <Route path='/signup' element={<Signup/>}/>
+        <Route path='/profile' element={<Profile/>}/>
+        <Route path='/postcard' element={<PostCard/>}/>
+        <Route path='/addpost' element={<AddPost/>}/>
+        <Route path='/viewpost' element={<PostFeed/>}/>
+        <Route path='/connect' element={<ConnectUser/>}/>
+        <Route path='/requests' element={<Requests/>}/>
+        <Route path='/connections' element={<ViewConnections/>}/>
+        <Route path='/chatpage' element={<ChatBox/>}/>
+      </Routes>
+    </div>
+  )
+}
+
+export default App
