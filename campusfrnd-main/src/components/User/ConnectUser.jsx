@@ -20,12 +20,15 @@ const ConnectUser = () => {
     JSON.parse(localStorage.getItem("user"))
   );
 
-  useEffect(() => {
-    axios.get("http://localhost:3006/api/user")
-      .then((res) => {
-        setPeople(res.data);
-      });
-  }, []);
+useEffect(() => {
+  if (!currentUser?._id) return;
+
+  axios.get(`http://localhost:3006/api/user/filtered/${currentUser._id}`)
+    .then((res) => {
+      setPeople(res.data);
+    })
+    .catch((err) => console.error(err));
+}, [currentUser]);
 
   const handlerequest = (id) => {
     axios.post("http://localhost:3006/api/user/send-request", {

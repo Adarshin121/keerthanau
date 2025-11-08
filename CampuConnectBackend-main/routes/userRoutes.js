@@ -14,6 +14,7 @@ const {
   rejectRequest,
   cancelRequest,
   getConnections,
+  getFilteredUsers,
   getChatHistory
 } = require("../controller/userController");
 
@@ -36,5 +37,7 @@ router.get('/connections/:userId', getConnections);
 
 router.get('/connections/:userId', getConnections);
 router.get('/chat/:userId1/:userId2', getChatHistory);
+
+router.get("/filtered/:userId", getFilteredUsers);
 
 module.exports = router;

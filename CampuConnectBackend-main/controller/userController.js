@@ -78,6 +78,34 @@ exports.deleteUser = async (req, res) => {
   }
 };
 
+
+// Get all users excluding current user, connected users, and pending requests
+exports.getFilteredUsers = async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const currentUser = await User.findById(userId);
+
+    if (!currentUser) return res.status(404).json({ error: "User not found" });
+
+    // Collect IDs to exclude
+    const excludeIds = [
+      currentUser._id,
+      ...currentUser.connections,
+      ...currentUser.requestsSent
+    ];
+
+    // Get all other users excluding these
+    const users = await User.find({ _id: { $nin: excludeIds } })
+      .select("-password");
+
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+
 // Send connection request
 exports.sendRequest = async (req, res) => {
   const { fromId, toId } = req.body;
@@ -98,35 +126,52 @@ exports.sendRequest = async (req, res) => {
 };
 
 // Accept connection request - CORRECTED VERSION
+// Accept connection request
 exports.acceptRequest = async (req, res) => {
-  const { fromId, toId } = req.body;
+  const { fromId, toId } = req.body; 
+  // fromId → user who SENT the request
+  // toId → user who RECEIVED the request (accepting now)
+
   try {
     const fromUser = await User.findById(fromId);
     const toUser = await User.findById(toId);
 
-    if (!fromUser || !toUser) return res.status(404).json({ error: "Users not found" });
+    if (!fromUser || !toUser)
+      return res.status(404).json({ error: "Users not found" });
 
-    // Check if already connected to avoid duplicates
-    if (fromUser.connections.includes(toId) || toUser.connections.includes(fromId)) {
+    // Check if already connected
+    if (
+      fromUser.connections.includes(toId) ||
+      toUser.connections.includes(fromId)
+    ) {
       return res.status(400).json({ error: "Already connected" });
     }
 
-    // Add to connections
+    // ✅ Add each other to connections
     fromUser.connections.push(toId);
     toUser.connections.push(fromId);
 
-    // Remove from requests - using toString() for proper comparison
-    fromUser.requestsSent = fromUser.requestsSent.filter(id => id.toString() !== toId.toString());
-    toUser.requestsReceived = toUser.requestsReceived.filter(id => id.toString() !== fromId.toString());
+    // ✅ Remove from pending request lists
+    // Remove `toId` from `fromUser.requestsSent`
+    fromUser.requestsSent = fromUser.requestsSent.filter(
+      (id) => id.toString() !== toId.toString()
+    );
 
+    // Remove `fromId` from `toUser.requestsReceived`
+    toUser.requestsReceived = toUser.requestsReceived.filter(
+      (id) => id.toString() !== fromId.toString()
+    );
+
+    // Save both users
     await fromUser.save();
     await toUser.save();
 
-    res.json({ message: "Connection request accepted" });
+    res.json({ message: "Connection request accepted successfully" });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
+
 
 // Reject connection request - CORRECTED VERSION
 exports.rejectRequest = async (req, res) => {
@@ -177,27 +222,43 @@ exports.cancelRequest = async (req, res) => {
 exports.getReceivedRequests = async (req, res) => {
   try {
     const user = await User.findById(req.params.userId)
-      .populate('requestsReceived', 'name profilePic branch year')
-      .select('requestsReceived');
-    
-    res.json(user.requestsReceived);
+      .populate('requestsReceived', 'name profilePic branch year connections')
+      .select('requestsReceived connections');
+
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    // filter out already connected users
+    const filtered = user.requestsReceived.filter(
+      (reqUser) => !user.connections.some(conn => conn.toString() === reqUser._id.toString())
+    );
+
+    res.json(filtered);
   } catch (err) {
     res.json({ error: err.message });
   }
 };
 
+
 // Get sent requests for a user
 exports.getSentRequests = async (req, res) => {
   try {
     const user = await User.findById(req.params.userId)
-      .populate('requestsSent', 'name profilePic branch year')
-      .select('requestsSent');
-    
-    res.json(user.requestsSent);
+      .populate('requestsSent', 'name profilePic branch year connections')
+      .select('requestsSent connections');
+
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    // filter out already connected users
+    const filtered = user.requestsSent.filter(
+      (reqUser) => !user.connections.some(conn => conn.toString() === reqUser._id.toString())
+    );
+
+    res.json(filtered);
   } catch (err) {
     res.json({ error: err.message });
   }
 };
+
 
 // Reject connection request
 exports.rejectRequest = async (req, res) => {
