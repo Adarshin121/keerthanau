@@ -34,6 +34,9 @@ const NavBar = () => {
               <Link to="/profile" className="nav-link">
                 <Button variant="text" className="nav-button">Profile</Button>
               </Link>
+              <Link to="/connections" className="nav-link">
+                <Button variant="text" className="nav-button">Chat</Button>
+              </Link>
               <Link to="/requests" className="nav-link">
                 <Button variant="text" className="nav-button">Requests</Button>
               </Link>

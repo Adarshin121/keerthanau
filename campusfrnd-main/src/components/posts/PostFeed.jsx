@@ -30,6 +30,7 @@ import {
 } from '@mui/icons-material';
 import axios from 'axios';
 import { format } from 'date-fns';
+import { Link } from 'react-router-dom';
 
 // Enhanced styled components
 const StyledCard = styled(Card)(({ theme }) => ({
@@ -307,6 +308,7 @@ const PostFeed = () => {
                 <AnimatedCardContent>
                   <CardHeader
                     avatar={
+                      
                       <Avatar 
                         src={post.userId.profilePic} 
                         sx={{ 
@@ -320,6 +322,7 @@ const PostFeed = () => {
                       >
                         {post.userId.name.split(" ")[0][0]}
                       </Avatar>
+                     
                     }
                     action={
                       <IconButton aria-label="settings" sx={{ color: grey[600] }}>
@@ -327,9 +330,15 @@ const PostFeed = () => {
                       </IconButton>
                     }
                     title={
+                      <Link
+                          to="/publicprofile"
+                          state={{ userId: post.userId._id }}
+                          style={{ textDecoration: 'none', color: 'inherit' }}
+                        >
                       <Typography variant="h6" fontWeight="700" color="text.primary">
                         {post.userId.name}
                       </Typography>
+                       </Link>
                     }
                     subheader={
                       <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.75rem' }}>

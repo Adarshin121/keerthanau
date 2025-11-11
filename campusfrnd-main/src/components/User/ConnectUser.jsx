@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { styled } from '@mui/material/styles';
 import '../css/ConnectUser.css'; // Create this CSS file
+import { Link } from 'react-router-dom';
 
 const StyledCard = styled(Card)(({ theme }) => ({
   borderRadius: '12px',
@@ -85,7 +86,13 @@ useEffect(() => {
                     <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
                       <Avatar src={person.profilePic} sx={{ width: 56, height: 56 }} />
                       <Box sx={{ ml: 2 }}>
-                        <Typography variant="h6">{person.name}</Typography>
+                        <Link
+                          to="/publicprofile"
+                          state={{ userId: person._id }}
+                          style={{ textDecoration: 'none', color: 'inherit' }}
+                        >                        
+                              <Typography variant="h6">{person.name}</Typography>
+                        </Link>
                         <Typography variant="subtitle2" color="text.secondary">
                           {person.branch} • Year {person.year}
                         </Typography>

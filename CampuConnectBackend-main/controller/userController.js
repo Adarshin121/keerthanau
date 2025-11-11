@@ -1,6 +1,7 @@
 const User = require("../model/userModel");
 const mongoose = require('mongoose');
 const Message = require("../model/chatModel");
+const XLSX = require("xlsx");
 
 // Register new user
 exports.signup = async (req, res) => {
@@ -11,6 +12,40 @@ exports.signup = async (req, res) => {
     res.json({ error: error.message });
   }
 };
+
+
+exports.bulkUploadUsers = async (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ error: "No file uploaded" });
+
+    // Read the Excel file
+    const workbook = XLSX.readFile(req.file.path);
+    const sheetName = workbook.SheetNames[0];
+    const data = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+
+    // Example Excel columns should be: name, email, password, phone, branch, year
+    const usersToInsert = data.map(user => ({
+      name: user.name,
+      email: user.email,
+      password: user.password,
+      phone: user.phone?.toString(),
+      branch: user.branch,
+      year: user.year,
+    }));
+
+    // Insert many at once
+    const insertedUsers = await User.insertMany(usersToInsert, { ordered: false });
+
+    res.json({
+      message: `${insertedUsers.length} users added successfully`,
+      data: insertedUsers,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
 
 // Login user
 exports.login = async (req, res) => {

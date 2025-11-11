@@ -13,6 +13,8 @@ import NavBar from './components/NavBar'
 import Requests from './components/User/Requests'
 import ViewConnections from './components/User/ViewConnections'
 import ChatBox from './components/Chat/ChatBox'
+import BulkUpload from './components/User/BulkUpload'
+import PublicProfile from './components/User/PublicProfile'
 
 const App = () => {
   const storedUser = JSON.parse(localStorage.getItem("user"));
@@ -23,7 +25,9 @@ const App = () => {
         <Route path='/' element={<Home/>}/>
         <Route path='/login' element={<Login/>}/>
         <Route path='/signup' element={<Signup/>}/>
+        <Route path='/bulkupload' element={<BulkUpload/>}/>
         <Route path='/profile' element={<Profile/>}/>
+        <Route path="/publicprofile" element={<PublicProfile />} />
         <Route path='/postcard' element={<PostCard/>}/>
         <Route path='/addpost' element={<AddPost/>}/>
         <Route path='/viewpost' element={<PostFeed/>}/>

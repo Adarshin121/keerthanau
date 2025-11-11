@@ -14,6 +14,7 @@ import {
 import axios from "axios";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
+import { Link } from "react-router-dom";
 
 const Requests = () => {
   const [tabValue, setTabValue] = useState(0);
@@ -150,9 +151,15 @@ const Requests = () => {
                     <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
                       <Avatar sx={{ width: 56, height: 56 }} />
                       <Box sx={{ ml: 2 }}>
+                        <Link
+                          to="/publicprofile"
+                          state={{ userId: request._id }}
+                          style={{ textDecoration: 'none', color: 'inherit' }}
+                        >
                         <Typography variant="h6" component="div">
                           {request.name}
                         </Typography>
+                        </Link>
                         <Typography
                           variant="subtitle2"
                           color="text.secondary"

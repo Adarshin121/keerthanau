@@ -3,7 +3,7 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { styled } from '@mui/material/styles';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const StyledCard = styled(Card)(({ theme }) => ({
   borderRadius: '12px',
@@ -67,9 +67,15 @@ const ChatHandler = (recipientId) => {
                       sx={{ width: 56, height: 56 }}
                     />
                     <Box sx={{ ml: 2 }}>
+                      <Link
+                          to="/publicprofile"
+                          state={{ userId: person._id }}
+                          style={{ textDecoration: 'none', color: 'inherit' }}
+                        >
                       <Typography variant="h6" component="div">
                         {person.name}
                       </Typography>
+                      </Link>
                       <Typography
                         variant="subtitle2"
                         color="text.secondary"
